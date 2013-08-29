@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Course Register System</title>
+
+
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+<!--
+body {
+	background-color: #FBFBFB;
+}
+-->
+</style></head>
+
+<body>
+
+<form id="form1" name="form1" method="get" action="/Search">
+<div id="main" align="center">
+<div align="center" class="font-4" id="title"> Course Register System</div>
+  <table width="95%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td align="right"><table width="40%" border="0" cellspacing="0" cellpadding="5">
+        <tr>
+          <td width="60%" align="right" class="font-2">Credit total ::</td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td width="60%" align="right" class="font-2">Credit Enroll ::</td>
+          <td>&nbsp;</td>
+        </tr>
+      </table></td>
+    </tr>
+    <tr>
+      <td><table width="30%" border="0" cellpadding="0" cellspacing="0" id="menu">
+        <tr class="font-3">
+          <td width="50%" align="center"><a href="/">Home</a></td>
+          <td align="center"><a href="/SearchCourse">Course</a></td>
+        </tr>
+      </table></td>
+    </tr>
+    <tr>
+      <td><table width="100%" border="0" cellpadding="10" cellspacing="0" id="row3">
+        <tr align="center">
+          <td width="200" bgcolor="#FFFF93"><label>
+            <input type="text" name="keyword" id="keyword" />
+            <input type="hidden" name="student_id" id="student_id" value="{{student_id}}"/>
+          </label></td>
+          <td width="150" bgcolor="#FFFF93"><select name="faculity" id="faculity">
+            <option value=""></option>
+            <option value="1">Engineering</option>
+            <option value="2">Information Technology</option>
+            <option value="3">Business Administration</option>
+            <option value="4">Language</option>
+          </select></td>
+          <td bgcolor="#FFFF93"><select name="department" id="department">
+            <option value=""></option>
+            <option value="1">Infomation Technology</option>
+            <option value="2">Multimedia Technology </option>
+            <option value="3">Business Information Technology</option>
+            <option value="4">Accountancy</option>
+            <option value="5">Industrial Management</option>
+            <option value="6">International Business Management </option>
+            <option value="7">Japanese Businees Administration</option>
+            <option value="8">Computer Engineering</option>
+            <option value="9">Production Engineering </option>
+            <option value="10">Automotive Engineering </option>
+            <option value="11">Electrical Engineering</option>
+            <option value="12">Industrial Engineering</option>
+            <option value="13">Language</option>
+          </select></td>
+          <td width="80" bgcolor="#FFFF93"><label>
+            <select name="year" id="year">
+              <option value=""></option>
+              <option value="2556">2556</option>
+              <option value="2555">2555</option>
+              <option value="2554">2554</option>
+              <option value="2553">2553</option>
+            </select>
+          </label></td>
+          <td width="50" bgcolor="#FFFF93"><select name="semester" id="semester">
+            <option value=""></option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select></td>
+          <td bgcolor="#FFFF93"><input type="submit" name="search" id="search" value="Search" /></td>
+        </tr>
+      </table></td>
+    </tr>
+    <tr>
+      <td align="center" bgcolor="#FFFF93"><table width="95%" border="0" cellspacing="0" cellpadding="5">
+        {% for row in course  %}
+        <tr>
+          <td width="10%" bgcolor="#FF9966"><a href="/CourseEnroll?course_code={{ row[1] }}&student_id={{ student_id }}">{{ row[1] }}</a></td>
+          <td bgcolor="#FF9966">{{ row[2] }}</td>
+        </tr>
+        {% endfor %}
+      </table></td>
+    </tr>
+      <table width="100%" border="0" cellpadding="5" cellspacing="0" id="table-body">
+        <tr>
+          <br />
+<br />
+<br />
+<br />
+
+          </td>
+        </tr>
+      </table>
+  </table>
+</div>
+</form>
+</body>
+</html>

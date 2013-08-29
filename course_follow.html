@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Course Followed</title>
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+<!--
+body {
+	background-color: #FBFBFB;
+}
+-->
+</style></head>
+
+<body>
+<div id="main" align="center">
+  <div align="center" class="font-4" id="title"> 
+    <p>Course Followed</p>
+  </div>
+<table width="95%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td align="center"><table width="80%" border="0" cellpadding="5" cellspacing="0" id="enrol-detial1">
+      {% for row in course %}
+      <tr>
+        <td width="20%" align="right" class="font-5">Course Code ::</td>
+        <td>{{ row[1] }}</td>
+        <td width="20%" align="right" class="font-5">Credit ::</td>
+        <td width="15%">{{ credit }}</td>
+      </tr>
+      <tr>
+        <td align="right" class="font-5">Course Name ::</td>
+        <td>{{ row[2] }}</td>
+        <td align="right" class="font-5">Total Capacity ::</td>
+        <td>{{ capacity }}</td>
+      </tr>
+      <tr>
+        <td align="right" class="font-5">Faculity ::</td>
+        <td>{{ row[11] }}</td>
+        <td align="right" class="font-5">Total Enroll ::</td>
+        <td>{{ enroll }}</td>
+      </tr>
+      <tr>
+        <td align="right" class="font-5">Department ::</td>
+        <td>{{ row[10] }}</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+      <table width="80%" border="0" cellpadding="5" cellspacing="0" id="enrol-detial2">
+        <tr>
+          <td width="20%" align="right" valign="top" class="font-5">Prerequsite ::</td>
+          <td valign="top">{{ prerequsite_code }}</td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr>
+    <td align="center">
+    <div id="description">
+    <table width="80%" border="0" cellpadding="5" cellspacing="0" id="enrol-detial3">
+      <tr>
+        <td class="font-5">Course Description </td>
+      </tr>
+      <tr>
+        <td class="font-1">{{ row[3] }}</td>
+      </tr>
+      {% endfor %}
+    </table
+    ></div></td>
+  </tr>
+  <tr>
+    <td align="center"><table width="80%" border="0" cellpadding="3" cellspacing="0" id="enroll">
+      <tr>
+        <td width="10%" align="center" bgcolor="#FFCC33">Section</td>
+        <td width="20%" align="center" bgcolor="#FFCC33">Date</td>
+        <td width="15%" align="center" bgcolor="#FFCC33">Time</td>
+        <td align="center" bgcolor="#FFCC33">Professor</td>
+        <td width="10%" align="center" bgcolor="#FFCC33">Total</td>
+        <td width="10%" align="center" bgcolor="#FFCC33">&nbsp;</td>
+      </tr>
+<script type="text/javascript">
+  var x=0;
+  {% for row in section %}
+  if(x!={{row[0]}}) 
+  { 
+    if({{ fol_sec }}=={{ row[0] }})
+    {
+      if({{ row[4] }}=={{ row[5] }})
+      {
+        document.write("<tr>\
+              <td align='center' bgcolor='#FF9966'>{{ row[0] }}</td>\
+              <td align='center' bgcolor='#FF9966'>{{ row[1] }}</td>\
+              <td align='center' bgcolor='#FF9966'>{{ row[2] }}</td>\
+              <td align='center' bgcolor='#FF9966'>{{ row[3] }}</td>\
+              <td align='center' bgcolor='#FF9966'>{{ row[4] }}/{{ row[5] }}</td>\
+              <td align='center' bgcolor='#FF9966'>\
+                <a href='/UnFollow?student_id={{ student_id }}&section_id={{ row[6] }}&regiscourse_id={{ row[7] }}'>\
+                  <input type='submit' name='button2' id='button2' value='UnFollow' />\
+                </a>\
+              </td>\
+            </tr>");
+        }
+        else
+        {
+          document.write("<tr>\
+          <td align='center' bgcolor='#FF9966'>{{ row[0] }}</td>\
+          <td align='center' bgcolor='#FF9966'>{{ row[1] }}</td>\
+          <td align='center' bgcolor='#FF9966'>{{ row[2] }}</td>\
+          <td align='center' bgcolor='#FF9966'>{{ row[3] }}</td>\
+          <td align='center' bgcolor='#FF9966'>{{ row[4] }}/{{ row[5] }}</td>\
+          <td align='center' bgcolor='#FF9966'>\
+            <a href='/Enroll?student_id={{ student_id }}&section_id={{ row[6] }}&regiscourse_id={{ row[7] }}&enroll={{ row[4] }}&capacity={{ row[5] }}'>\
+              <input type='submit' name='button2' id='button2' value='Enroll' />\
+            </a>\
+          </td>\
+        </tr>");
+        }
+    }
+    else if({{ row[4] }}=={{ row[5] }})
+    {
+    document.write("<tr>\
+          <td align='center' bgcolor='#FF9966'>{{ row[0] }}</td>\
+          <td align='center' bgcolor='#FF9966'>{{ row[1] }}</td>\
+          <td align='center' bgcolor='#FF9966'>{{ row[2] }}</td>\
+          <td align='center' bgcolor='#FF9966'>{{ row[3] }}</td>\
+          <td align='center' bgcolor='#FF9966'>{{ row[4] }}/{{ row[5] }}</td>\
+          <td align='center' bgcolor='#FF9966'>\
+            <a href='/Follow?student_id={{ student_id }}&section_id={{ row[6] }}&regiscourse_id={{ row[7] }}'>\
+              <input type='submit' name='button2' id='button2' value='Follow' />\
+            </a>\
+          </td>\
+        </tr>");
+    }
+    else
+    {
+      document.write("<tr>\
+          <td align='center' bgcolor='#FF9966'>{{ row[0] }}</td>\
+          <td align='center' bgcolor='#FF9966'>{{ row[1] }}</td>\
+          <td align='center' bgcolor='#FF9966'>{{ row[2] }}</td>\
+          <td align='center' bgcolor='#FF9966'>{{ row[3] }}</td>\
+          <td align='center' bgcolor='#FF9966'>{{ row[4] }}/{{ row[5] }}</td>\
+          <td align='center' bgcolor='#FF9966'>\
+            <a href='/Enroll?student_id={{ student_id }}&section_id={{ row[6] }}&regiscourse_id={{ row[7] }}&enroll={{ row[4] }}&capacity={{ row[5] }}'>\
+              <input type='submit' name='button2' id='button2' value='Enroll' />\
+            </a>\
+          </td>\
+        </tr>");
+    }
+    x={{row[0]}};
+  }
+  else
+  { document.write("<tr>\
+          <td align='center' bgcolor='#FF9966'>&nbsp;</td>\
+          <td align='center' bgcolor='#FF9966'>{{ row[1] }}</td>\
+          <td align='center' bgcolor='#FF9966'>{{ row[2] }}</td>\
+          <td align='center' bgcolor='#FF9966'>{{ row[3] }}</td>\
+          <td align='center' bgcolor='#FF9966'>&nbsp;</td>\
+          <td align='center' bgcolor='#FF9966'>&nbsp;</td>\
+        </tr>");
+    x={{row[0]}};
+  }
+  {% endfor %}
+</script>
+
+    </table></td>
+  </tr>
+</table>
+<div id="Close">
+  <input type="button" name="close" id="close" value="Close" style="width:100px; height:30px;" onclick="window.close()" /> 
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="/"><input type="button" name="back" id="back" value="Back" style="width:100px; height:30px;" /></a>
+</div>
+
+</div>
+</body>
+</html>

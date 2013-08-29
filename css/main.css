@@ -1,0 +1,96 @@
+@charset "utf-8";
+body,td,th {
+	font-family: tahoma;
+	font-size: 0.95em;
+	clear: none;
+	float: none;
+}
+
+
+#menu {
+	background-color: #FFFF93;
+	height: 40px;
+}
+.font-1 {
+	font-family: tahoma;
+	font-size: .85em;
+}
+.font-2 {
+	font-family: tahoma;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+.font-3 {
+	font-family: tahoma;
+	font-size: 1.4em;
+	font-weight: bold;
+}
+
+#table-body {
+	background-color: #FFFF93;
+}
+
+#credit-top {
+	height: 50px;
+}
+a:link {
+	text-decoration: underline;
+}
+a:visited {
+	text-decoration: underline;
+	color: #333;
+}
+a:hover {
+	text-decoration: underline;
+	color: #F30;
+}
+
+
+a:active {
+	text-decoration: underline;
+	color: #333;
+}
+
+#main {
+	width: 85%;
+	position:relative;
+	margin: auto;
+}#follow{
+	font-size:1.1em;
+}.font-4 {
+	font-family: tahoma;
+	font-size: 1.5em;
+	color: #333;
+	font-weight: bold;
+}
+#enroll{
+	font-size:1.1em;
+}
+#enrol-detial10 {
+	font-family: tahoma;
+	font-size: 1em;
+	font-weight: bold;
+}#enrol-detial20 {
+	font-family: tahoma;
+	font-size: 1em;
+	font-weight: bold;
+}#enrol-detial30 {
+	font-family: tahoma;
+	font-size: 1em;
+	font-weight: bold;
+}
+.font-5 {
+	font-family: tahoma;
+	font-size: 1.1em;
+	font-weight: bold;
+	color: #333;
+}
+#description {
+	margin-bottom: 5px;
+}
+#Close {
+	float: right;
+	width: 30%;
+	margin-top: 10px;
+	margin-right: 10%;
+}

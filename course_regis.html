@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Course Register System</title>
+
+
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+<!--
+body {
+	background-color: #FBFBFB;
+}
+-->
+</style></head>
+
+<body>
+
+<div id="main" align="center">
+<div align="center" class="font-4" id="title"> Course Register System</div>
+  <table width="95%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td align="right"><table width="40%" border="0" cellspacing="0" cellpadding="5">
+        <tr>
+          <td width="60%" align="right" class="font-2">Credit total ::</td>
+          <td>{{credit_total}}</td>
+        </tr>
+        <tr>
+          <td width="60%" align="right" class="font-2">Credit Enroll ::</td>
+          <td>{{credit_enroll}}</td>
+        </tr>
+      </table></td>
+    </tr>
+    <tr>
+      <td><table width="30%" border="0" cellpadding="0" cellspacing="0" id="menu">
+        <tr class="font-3">
+          <td width="50%" align="center"><a href="/">Home</a></td>
+          <td align="center"><a href="/SearchCourse?student_id={{student_id}}">Course</a></td>
+        </tr>
+      </table></td>
+    </tr>
+    <tr>
+      <td><table width="100%" border="0" cellpadding="5" cellspacing="0" id="table-body">
+        <tr>
+          <td width="50%" rowspan="2">
+         <div id='calendar' >
+<!-- Start Script -->
+            <script type="text/javascript">
+
+  $(document).ready(function() {
+
+/*-------------------------------------------- Start Get Array --------------------------------------------------------- */
+            var year=[""];
+            var month=[""];
+            var date=[""];
+            var start_time_hour = [""];
+            var start_time_minute = [""];
+            var end_time_hour = [""];
+            var end_time_minute = [""];
+            var allday_time = [""];
+
+              {% for row in year %}
+                year.push("{{row}}");
+              {% endfor %} 
+
+              {% for row2 in month %}
+                month.push("{{row2}}");
+              {% endfor %}      
+
+              {% for row3 in date %}
+                 date.push("{{row3}}");  
+              {% endfor %}
+
+              {% for row4 in start_time_hour %}
+                 start_time_hour.push("{{row4}}"); 
+              {% endfor %}
+
+              {% for row5 in start_time_minute %}
+                 start_time_minute.push("{{row5}}");  
+              {% endfor %}
+
+              {% for row6 in end_time_hour %}
+                 end_time_hour.push("{{row6}}");  
+              {% endfor %}
+
+              {% for row7 in end_time_minute %}
+                 end_time_minute.push("{{row7}}");  
+              {% endfor %}
+
+              {% for row8 in allday_time %}
+                 allday_time.push("{{row8}}");  
+              {% endfor %}
+
+/*-------------------------------------------- End Get Array --------------------------------------------------------- */
+
+/*-------------------------------------------- Start Calendar --------------------------------------------------------- */
+
+    $('#calendar').fullCalendar({
+        editable: true,
+        header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+        defaultView: 'agendaWeek',
+        events: [
+        {% for row in events %}   
+        {% if(allday_time[loop.index-1]!=1) %}
+          {
+          title: '{{ row['summary'] }}',
+          start: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}], start_time_hour[{{loop.index}}], start_time_minute[{{loop.index}}]),
+          end: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}], end_time_hour[{{loop.index}}], end_time_minute[{{loop.index}}]),
+          allDay: false
+        },          
+        {% else %}
+          {
+          title: '{{ row['summary'] }}',
+          start: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}]),
+          end: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}]),
+          allDay: true
+        },
+        {% endif %}
+        {% endfor %}
+        ]
+      });
+
+  });
+
+/*-------------------------------------------- END Calendar --------------------------------------------------------- */              
+            </script>
+<!-- END Script -->
+          </div>
+          </td>
+          <td><span class="font-2">Enrolled Courses</span>
+            <table width="100%" border="0" cellpadding="5" cellspacing="0" id="enroll" >
+            <tr>
+              <td width="15%" align="center" bgcolor="#FFCC33">ID</td>
+              <td align="center" bgcolor="#FFCC33">Name</td>
+              <td width="15%" align="center" bgcolor="#FFCC33">Section</td>
+              <td width="15%" align="center" bgcolor="#FFCC33">Credit</td>
+              <td width="15%" align="center" bgcolor="#FFCC33">&nbsp;</td>
+            </tr>
+            {% for row in regis  %}
+            <tr class="font-1">
+              <td align="center" bgcolor="#FF9966"><a href="/detailCourse?course_code={{ row[0]}}&student_id={{student_id}}">{{ row[0] }}</a>    </td>
+              <td align="center" bgcolor="#FF9966">{{row[1]}}</td>
+               <td align="center" bgcolor="#FF9966">{{row[2]}}</td>
+              <td align="center" bgcolor="#FF9966">
+<script type="text/javascript">
+
+        var lecture,lab,credit
+        lecture={{row[3]}};
+        lab={{row[4]}};
+        credit=(lab/3)+lecture;
+        document.write(credit);
+</script>
+              </td>
+              <td align="center" bgcolor="#FF9966">
+              <a href="/removeregistered?student_id={{student_id}}&regiscourse_id={{row[5]}}&section_id={{row[6]}}&enroll={{row[7]}}">Remove</a></td>
+            </tr>
+            {% endfor %}
+          </table><br /></td>
+        </tr>
+        <tr>
+          <td><span class="font-2">Followed Courses</span>
+            <table width="100%" border="0" cellspacing="0" cellpadding="5" id="follow">
+              <tr>
+                <td width="15%" align="center" bgcolor="#FFCC33">ID</td>
+                <td align="center" bgcolor="#FFCC33">Name</td>
+                <td width="15%" align="center" bgcolor="#FFCC33">Section</td>
+                <td width="15%" align="center" bgcolor="#FFCC33">Credit</td>
+                <td width="15%" align="center" bgcolor="#FFCC33">&nbsp;</td>
+              </tr>
+              {% for row in followcourse %}
+              <tr class="font-1">
+                <td align="center" bgcolor="#FF9966"><a href="/FollowingDetailCourse?course_code={{ row[0] }}&student_id={{ student_id }}">{{ row[0] }}</a></td>
+                <td align="center" bgcolor="#FF9966">{{ row[1] }}</td>
+                <td align="center" bgcolor="#FF9966">{{ row[2] }}</td>
+                <td align="center" bgcolor="#FF9966">&nbsp;</td>
+                <td align="center" bgcolor="#FF9966">
+                  <a href="/UnFollow?student_id={{ student_id }}&regiscourse_id={{ row[3] }}&section_id={{ row[4] }}">Unfollow</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </table></td>
+        </tr>
+      </table></td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>
