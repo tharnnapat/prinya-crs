@@ -108,7 +108,7 @@ body {
             <input type='button' name='button' id='button' value='Follow' /></a>
             
            {% else %}  
-          <a href="/Change?regiscourse_id={{row[5]}}&enroll={{row[7]}}&section_id={{row[6]}}&sec_id={{row2[0]}}&student_id={{student_id}}"><input type='button' name='button' id='button' value='Change' /></a>
+          <a href="/Change?regiscourse_id={{row[5]}}&enroll={{row[7]}}&section_id={{row[6]}}&sec_id={{row2[0]}}&student_id={{student_id}}&course_code={{row[0]}}"><input type='button' name='button' id='button' value='Change' /></a>
           {% endif %}
           {% endif %}
         </td>

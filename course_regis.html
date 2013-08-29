@@ -5,6 +5,11 @@
 <title>Course Register System</title>
 
 
+<link href='css/fullcalendar.css' rel='stylesheet' />
+<link href='cssfullcalendar.print.css' rel='stylesheet' media='print' />
+<script src='css/jquery-1.10.2.min.js'></script>
+<script src='css/jquery-ui-1.10.3.custom.min.js'></script>
+<script src='css/fullcalendar.min.js'></script>
 <link href="css/main.css" rel="stylesheet" type="text/css" />
 <style type="text/css">
 <!--
@@ -156,7 +161,7 @@ body {
 </script>
               </td>
               <td align="center" bgcolor="#FF9966">
-              <a href="/removeregistered?student_id={{student_id}}&regiscourse_id={{row[5]}}&section_id={{row[6]}}&enroll={{row[7]}}">Remove</a></td>
+              <a href="/removeregistered?student_id={{student_id}}&regiscourse_id={{row[5]}}&section_id={{row[6]}}&enroll={{row[7]}}&course_code={{row[0]}}">Remove</a></td>
             </tr>
             {% endfor %}
           </table><br /></td>

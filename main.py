@@ -25,12 +25,11 @@ from apiclient.discovery import build
 import json
 from oauth2client.appengine import OAuth2Decorator
 from apiclient.http import MediaFileUpload
-from google.appengine.api import rdbms
 import datetime
 
 decorator = OAuth2Decorator(
     client_id = '1084112190775.apps.googleusercontent.com',
-    client_secret = 'p24Uy-IqgZ_OyqzsqokOobB',
+    client_secret = 'p24Uy-IqgZ_OyqzsqokOobBV',
     scope='https://www.googleapis.com/auth/calendar'
     )
 service = build('calendar','v3')
@@ -568,7 +567,8 @@ class EnrollHandler(webapp2.RequestHandler):
     def get(self):
         student_id = self.request.get('student_id');
         student_id=int(student_id)
-    	# course_code = self.request.get('course_code');
+    	course_code = self.request.get('course_code');
+        section_number = self.request.get('section_number');
     	conn = rdbms.connect(instance=_INSTANCE_NAME, database='Prinya_Project')
     	cursor = conn.cursor()
         sql="SELECT round(sum(credit_lecture+(credit_lab/3)),'0')\
@@ -630,7 +630,8 @@ class EnrollHandler(webapp2.RequestHandler):
     		
 
     	conn.close()
-    	self.redirect('/?student_id='+str(student_id))
+
+        self.redirect('/InsertCelendar?student_id='+str(student_id)+'&course_code='+str(course_code)+'&section='+str(section_number))
 
 class ErrorHandler(webapp2.RequestHandler):
     def get(self):
@@ -677,7 +678,7 @@ class UnenrollHandler(webapp2.RequestHandler):
         conn2.commit();
         conn.close();
         conn2.close();
-        self.redirect('/SendMail?student_id='+str(student_id)+'&regiscourse_id='+str(regiscourse_id))
+        self.redirect('/DeleteCalendar?student_id='+str(student_id)+'&regiscourse_id='+str(regiscourse_id)+'&course_code='+str(course_code)+'&section_id='+str(section_id))
 
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -690,6 +691,7 @@ class removeregistered(webapp2.RequestHandler):
         regiscourse_id=int(regiscourse_id)
         section_id=self.request.get('section_id')
         section_id=int(section_id)
+        course_code=self.request.get('course_code');
         enroll=self.request.get('enroll')
         enroll=int(enroll)
         enroll=enroll-1
@@ -711,7 +713,9 @@ class removeregistered(webapp2.RequestHandler):
         conn.close();
         conn2.close();
 
-        self.redirect('/SendMail?student_id='+str(student_id)+'&regiscourse_id='+str(regiscourse_id))
+
+
+        self.redirect('/DeleteCalendar?student_id='+str(student_id)+'&regiscourse_id='+str(regiscourse_id)+'&course_code='+str(course_code)+'&section_id='+str(section_id))
 
 class DetailCourse(webapp2.RequestHandler):
     def get(self):
@@ -964,6 +968,171 @@ class SendMailHandler(webapp2.RequestHandler):
                 message.send()
             self.redirect('/?student_id='+str(student_id))
 
+class InsertCelendar(webapp2.RequestHandler):
+    @decorator.oauth_required
+    def get(self):
+
+        open_semester_year = '2013-09-02' #Insert Date on Monday
+        weekly_study = 4
+
+        course_code = self.request.get('course_code');
+        section = self.request.get('section');
+        # section = int(section)
+        student_id = self.request.get('student_id');
+
+        today = datetime.datetime.now()
+        weekday = today.weekday()+2
+        if weekday == 6 :
+            weekday = 1 
+        month_num=int(open_semester_year[5:-3])
+        day_num =int(open_semester_year[8:])
+
+
+        conn = rdbms.connect(instance=_INSTANCE_NAME, database='Prinya_Project')
+        cursor = conn.cursor()
+        sql ="select day,start_time,end_time,room from\
+                section sec JOIN section_time sct\
+                ON sec.section_id=sct.section_id\
+                JOIN course cou\
+                ON cou.course_id=sec.regiscourse_id\
+                WHERE course_code='%s' AND section_number='%s'"%(course_code,section)
+
+        cursor.execute(sql)
+        conn.commit()
+        result = cursor.fetchall()
+
+        day = []
+        full_start_time =[]
+        full_end_time = []
+        room = []
+
+        insert_day = []
+        insert_day2 = []
+        month_num2=[]
+
+        # self.response.write(sql)
+        # self.response.write("</br>")
+        # self.response.write(course_code)
+        # self.response.write(section)
+
+        for x in range(0,len(result)):
+            day.append(result[x][0])
+            full_start_time.append(result[x][1])        
+            full_end_time.append(result[x][2])
+            room.append(result[x][3])
+
+
+        for x in range(0,len(result)):
+            for d in range(1,8):  
+                if d==result[x][0]:
+                    if month_num==1 or month_num==3 or month_num==5 or month_num==7 or month_num==8 or month_num==10 or month_num==12 :
+                        if day_num+d <= 31 :                    
+                            insert_day.append(day_num+d-2)
+                            month_num2.append(month_num)
+                        else:
+                            insert_day.append(day_num+d-33)
+                            month_num2.append(month_num+1)                                              
+                                        
+                    elif month_num==4 or month_num==6 or month_num==9 or month_num==11:
+                        if day_num+d <= 30 :                    
+                            insert_day.append(day_num+d-2)
+                            month_num2.append(month_num)
+                        else:
+                            insert_day.append(day_num+d-32)
+                            month_num2.append(month_num+1)
+                                                
+                    elif month_num==2:
+                        if day_num+d <= 28 :                    
+                            insert_day.append(day_num+d-2)
+                            month_num2.append(month_num)
+                        else:
+                            insert_day.append(day_num+d-30)
+                            month_num2.append(month_num+1)                                                  
+        
+        for x in range(0,len(insert_day)):
+            insert_day2.append('2013-'+str(month_num2[x])+'-'+str(insert_day[x]))   
+        
+        http = decorator.http()
+        for num in range(0,len(day)):
+            event = {
+                'summary' : "%s"%(course_code),
+                'Location' : 'Thai-Nichi Institute of Technology',
+                'start' : {
+                    'dateTime' : "%sT%s.000+07:00"%(insert_day2[num],full_start_time[num]),
+                    'timeZone' : 'Asia/Bangkok'
+                },
+                'end':{
+                    'dateTime' : "%sT%s.000+07:00"%(insert_day2[num],full_end_time[num]),
+                    'timeZone' : 'Asia/Bangkok'
+                },
+                'recurrence': [
+                "RRULE:FREQ=WEEKLY;COUNT=%d"%(weekly_study),
+                ],       
+            }
+
+            insert_event = service.events().insert(calendarId='primary',body=event).execute(http=http)
+
+
+        self.redirect('/?student_id='+str(student_id))
+
+
+class DeleteCalendar(webapp2.RequestHandler):
+    @decorator.oauth_required
+    def get(self):
+
+        course_code = self.request.get('course_code');
+        section_id = self.request.get('section_id');
+        # section_id = int(section_id)
+        student_id = self.request.get('student_id');
+        regiscourse_id = self.request.get('regiscourse_id');
+
+        http = decorator.http()
+        events = service.events().list(calendarId='primary').execute(http=http)
+        ID_events = []
+        name_events = []
+
+        conn = rdbms.connect(instance=_INSTANCE_NAME, database='Prinya_Project')
+        cursor = conn.cursor()
+        sql ="select room from\
+                section sec JOIN section_time sct\
+                ON sec.section_id=sct.section_id\
+                JOIN course cou\
+                ON cou.course_id=sec.regiscourse_id\
+                WHERE course_code='%s' AND section_number=(select section_number from section_time where section_id='%s')"%(course_code,section_id)
+
+        cursor.execute(sql)
+        conn.commit()
+
+        # room = ""
+        # for x in cursor.fetchall():
+        #     room = x[0]
+
+        # fullname =course_code+' '+room
+
+        for event in events['items']:
+            if 'summary' in event:
+                id_event = event['id']
+                name_event = event['summary']
+                ID_events.append(id_event)
+                name_events.append(name_event)
+ 
+
+        # self.response.write(course_code)
+        # self.response.write("</br>")        
+        # self.response.write(room)
+        # self.response.write("</br>")        
+        # self.response.write(fullname)
+        # for y in range(0,len(ID_events)):  
+        #     self.response.write(ID_events[y])
+        #     self.response.write(name_events[y])
+
+
+        for y in range(0,len(ID_events)):   
+            if course_code == name_events[y]:
+                http = decorator.http()
+                service.events().delete(calendarId='primary', eventId=ID_events[y]).execute(http=http)
+
+        self.redirect('/SendMail?student_id='+str(student_id)+'&regiscourse_id='+str(regiscourse_id))
 
         
 app = webapp2.WSGIApplication([
@@ -983,5 +1152,7 @@ app = webapp2.WSGIApplication([
     ('/removeregistered',removeregistered),
     ('/detailCourse',DetailCourse),
     ('/Change',ChangeCourse),
+    ('/InsertCelendar', InsertCelendar),
+    ('/DeleteCalendar', DeleteCalendar),
     (decorator.callback_path,decorator.callback_handler()),
 ], debug=True)
