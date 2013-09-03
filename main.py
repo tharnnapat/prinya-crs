@@ -158,8 +158,21 @@ class SearchCourseHandler(webapp2.RequestHandler):
         
         student_id=self.request.get('student_id');
         student_id=int(student_id)
+
+        conn = rdbms.connect(instance=_INSTANCE_NAME, database='Prinya_Project')
+        cursor = conn.cursor()
+        sql="SELECT department_name from department"
+        cursor.execute(sql);
+
+        conn2 = rdbms.connect(instance=_INSTANCE_NAME, database='Prinya_Project')
+        cursor2 = conn2.cursor()
+        sql2="SELECT title from faculity"
+        cursor2.execute(sql2);
+
         templates = {
-            'student_id' : student_id
+            'student_id' : student_id,
+            'department' : cursor.fetchall(),
+            'faculity' : cursor2.fetchall(),
             }
 
         template = JINJA_ENVIRONMENT.get_template('course_active.html')
@@ -167,6 +180,16 @@ class SearchCourseHandler(webapp2.RequestHandler):
 
 class SearchHandler(webapp2.RequestHandler):
     def get(self):
+        conn = rdbms.connect(instance=_INSTANCE_NAME, database='Prinya_Project')
+        cursor = conn.cursor()
+        sql="SELECT department_name from department"
+        cursor.execute(sql);
+
+        conn2 = rdbms.connect(instance=_INSTANCE_NAME, database='Prinya_Project')
+        cursor2 = conn2.cursor()
+        sql2="SELECT title from faculity"
+        cursor2.execute(sql2);
+
         student_id=self.request.get('student_id');
         student_id=int(student_id)
         course_code=self.request.get('keyword');
@@ -205,23 +228,16 @@ class SearchHandler(webapp2.RequestHandler):
 
 
 
-        data_faculity_id=self.request.get('faculity');
-        data_faculity_id=str(data_faculity_id)
-        data_faculity=""
+        data_faculity=self.request.get('faculity');
+        data_faculity=str(data_faculity)
+        data_department_full=""
+        
 
-        if data_faculity_id=="1":
-            data_faculity = "faculity='Engineering'";
-        elif data_faculity_id=="2":
-            data_faculity = "faculity='Information Technology'";
-        elif data_faculity_id=="3":
-            data_faculity = "faculity='Business Administration'";
-        elif data_faculity_id=="4":
-            data_faculity = "faculity='Language'";
-
-        if data_faculity_id =="":
+        if data_faculity =="":
             check_fac=0
         else:
             check_fac=1
+            data_faculity_full="faculity='"+data_faculity+"'";
 
 
 
@@ -229,37 +245,12 @@ class SearchHandler(webapp2.RequestHandler):
         data_department=str(data_department)
         data_department_full=""
 
-        if data_department=="1":
-            data_department_full="department='Information Technology'"
-        elif data_department=="2":
-            data_department_full="department='Multimedia Technology'"
-        elif data_department=="3":
-            data_department_full="department='Business Information Technology'"
-        elif data_department=="4":
-            data_department_full="department='Accountancy'"
-        elif data_department=="5":
-            data_department_full="department='Industrial Management'"
-        elif data_department=="6":
-            data_department_full="department='International Business Management'"
-        elif data_department=="7":
-            data_department_full="department='Japanese Businees Administration'"
-        elif data_department=="8":
-            data_department_full="department='Computer Engineering'"
-        elif data_department=="9":
-            data_department_full="department='Production Engineering'"
-        elif data_department=="10":
-            data_department_full="department='Automotive Engineering'"
-        elif data_department=="11":
-            data_department_full="department='Electrical Engineering'"
-        elif data_department=="12":
-            data_department_full="department='Industrial Engineering'"
-        elif data_department=="13":
-            data_department_full="department='Language'"
-
+        
         if data_department=="":
             check_dep=0
         else:
             check_dep=1
+            data_department_full="department='"+data_department+"'"
 
 
 
@@ -279,7 +270,7 @@ class SearchHandler(webapp2.RequestHandler):
                 where_code+=key_sem
             if check_fac == 1:
                 where_code+=a
-                where_code+=data_faculity
+                where_code+=data_faculity_full
             if check_dep==1:
                 where_code+=a
                 where_code+=data_department_full
@@ -291,7 +282,7 @@ class SearchHandler(webapp2.RequestHandler):
                 where_code+=key_sem
             if check_fac == 1:
                 where_code+=a
-                where_code+=data_faculity
+                where_code+=data_faculity_full
             if check_dep==1:
                 where_code+=a
                 where_code+=data_department_full
@@ -300,13 +291,13 @@ class SearchHandler(webapp2.RequestHandler):
                 where_code+=key_sem
             if check_fac == 1:
                 where_code+=a
-                where_code+=data_faculity
+                where_code+=data_faculity_full
             if check_dep==1:
                 where_code+=a
                 where_code+=data_department_full
         elif check_fac == 1:
             if check_fac == 1:
-                where_code+=data_faculity
+                where_code+=data_faculity_full
             if check_dep==1:
                 where_code+=a
                 where_code+=data_department_full
@@ -318,11 +309,11 @@ class SearchHandler(webapp2.RequestHandler):
 
             
 
-        conn = rdbms.connect(instance=_INSTANCE_NAME, database='Prinya_Project')
-        cursor = conn.cursor()
-        sql="SELECT course_id,course_code,course_name FROM course where %s "%(where_code)
-        cursor.execute(sql)
-        conn.commit()
+        conn3 = rdbms.connect(instance=_INSTANCE_NAME, database='Prinya_Project')
+        cursor3 = conn3.cursor()
+        sql3="SELECT course_id,course_code,course_name FROM course where %s "%(where_code)
+        cursor3.execute(sql3)
+        conn3.commit()
 
 
         # conn2=rdbms.connect(instance=_INSTANCE_NAME, database='Prinya_Project')
@@ -336,8 +327,10 @@ class SearchHandler(webapp2.RequestHandler):
 
         templates = {
 
-        'course' : cursor.fetchall(),
+        'course' : cursor3.fetchall(),
         'student_id' : student_id,
+        'department' : cursor.fetchall(),
+        'faculity' : cursor2.fetchall(),
         # 'enroll' : cursor2.fetchall(),
 
 
