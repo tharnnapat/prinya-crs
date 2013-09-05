@@ -109,7 +109,6 @@ class MainHandler(webapp2.RequestHandler):
 
 
         for event in events['items']:
-            title.append(event['summary'])
             if 'date' in event['start']:
                 dateTime = event['start']['date']       
                 if 'recurrence' in event:
@@ -122,13 +121,20 @@ class MainHandler(webapp2.RequestHandler):
                     start_time_minute.append(00)
                     end_time_hour.append(00)
                     end_time_minute.append(00)
-                    allday_time.append(1)
-                    title.append(event['summary'])   
+                    allday_time.append(1) 
                     if 'location' in event:
                         loca = event['location']
                         location.append(loca)
+                        if 'summary' in event:   
+                            title.append(event['summary'])
+                        else:
+                            title.append(" ")
                     else:
                         location.append(" ")
+                        if 'summary' in event:   
+                            title.append(event['summary'])
+                        else:
+                            title.append(" ")
                 else:
                     recurrence.append(0)
                     year.append(dateTime[:4])
@@ -139,12 +145,19 @@ class MainHandler(webapp2.RequestHandler):
                     end_time_hour.append(00)
                     end_time_minute.append(00)
                     allday_time.append(1)       
-                    title.append(event['summary'])    
                     if 'location' in event:
                         loca = event['location']
                         location.append(loca)
+                        if 'summary' in event:   
+                            title.append(event['summary'])
+                        else:
+                            title.append(" ")
                     else:
                         location.append(" ")
+                        if 'summary' in event:   
+                            title.append(event['summary'])
+                        else:
+                            title.append(" ")
             else:
                 dateTime = event['start']['dateTime']
                 dateTime2 = event['end']['dateTime']
@@ -158,13 +171,20 @@ class MainHandler(webapp2.RequestHandler):
                     start_time_minute.append(dateTime[14:-9])
                     end_time_hour.append(dateTime2[11:-12])
                     end_time_minute.append(dateTime2[14:-9])
-                    allday_time.append(0)
-                    title.append(event['summary'])                                                   
+                    allday_time.append(0)                                           
                     if 'location' in event:
                         loca = event['location']
                         location.append(loca)
+                        if 'summary' in event:   
+                            title.append(event['summary'])
+                        else:
+                            title.append(" ")
                     else:
                         location.append(" ")
+                        if 'summary' in event:   
+                            title.append(event['summary'])
+                        else:
+                            title.append(" ")
                 else:
                     recurrence.append(0)
                     year.append(dateTime[:4])
@@ -175,13 +195,19 @@ class MainHandler(webapp2.RequestHandler):
                     end_time_hour.append(dateTime2[11:-12])
                     end_time_minute.append(dateTime2[14:-9])
                     allday_time.append(0)
-                    title.append(event['summary'])
                     if 'location' in event:
                         loca = event['location']
                         location.append(loca)
+                        if 'summary' in event:   
+                            title.append(event['summary'])
+                        else:
+                            title.append(" ")
                     else:
                         location.append(" ")
-    
+                        if 'summary' in event:   
+                            title.append(event['summary'])
+                        else:
+                            title.append(" ")
 
         len_event = len(year)
 
