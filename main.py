@@ -101,31 +101,100 @@ class MainHandler(webapp2.RequestHandler):
         end_time_hour = []
         end_time_minute = []
         allday_time = []
+        loca = ""
+        location = []
+        recurrence = []
+        recurrence2 = []
+        title = []
+
 
         for event in events['items']:
-            if 'dateTime' in event['start']:
+            title.append(event['summary'])
+            if 'date' in event['start']:
+                dateTime = event['start']['date']       
+                if 'recurrence' in event:
+                    rec = event['recurrence']
+                    recurrence.append(rec)
+                    year.append(dateTime[:4])
+                    month.append(dateTime[5:-3])
+                    date.append(dateTime[8:])      
+                    start_time_hour.append(00)
+                    start_time_minute.append(00)
+                    end_time_hour.append(00)
+                    end_time_minute.append(00)
+                    allday_time.append(1)
+                    title.append(event['summary'])   
+                    if 'location' in event:
+                        loca = event['location']
+                        location.append(loca)
+                    else:
+                        location.append(" ")
+                else:
+                    recurrence.append(0)
+                    year.append(dateTime[:4])
+                    month.append(dateTime[5:-3])
+                    date.append(dateTime[8:])          
+                    start_time_hour.append(00)
+                    start_time_minute.append(00)
+                    end_time_hour.append(00)
+                    end_time_minute.append(00)
+                    allday_time.append(1)       
+                    title.append(event['summary'])    
+                    if 'location' in event:
+                        loca = event['location']
+                        location.append(loca)
+                    else:
+                        location.append(" ")
+            else:
                 dateTime = event['start']['dateTime']
                 dateTime2 = event['end']['dateTime']
-                year.append(dateTime[:4])
-                month.append(dateTime[5:-18])
-                date.append(dateTime[8:-15])
-                start_time_hour.append(dateTime[11:-12])
-                start_time_minute.append(dateTime[14:-9])
-                end_time_hour.append(dateTime2[11:-12])
-                end_time_minute.append(dateTime2[14:-9])
-                allday_time.append(0)
-                                                                                                                            
+                if 'recurrence' in event:
+                    rec = event['recurrence']
+                    recurrence.append(rec)
+                    year.append(dateTime[:4])
+                    month.append(dateTime[5:-18])
+                    date.append(dateTime[8:-15])
+                    start_time_hour.append(dateTime[11:-12])
+                    start_time_minute.append(dateTime[14:-9])
+                    end_time_hour.append(dateTime2[11:-12])
+                    end_time_minute.append(dateTime2[14:-9])
+                    allday_time.append(0)
+                    title.append(event['summary'])                                                   
+                    if 'location' in event:
+                        loca = event['location']
+                        location.append(loca)
+                    else:
+                        location.append(" ")
+                else:
+                    recurrence.append(0)
+                    year.append(dateTime[:4])
+                    month.append(dateTime[5:-18])
+                    date.append(dateTime[8:-15])
+                    start_time_hour.append(dateTime[11:-12])
+                    start_time_minute.append(dateTime[14:-9])
+                    end_time_hour.append(dateTime2[11:-12])
+                    end_time_minute.append(dateTime2[14:-9])
+                    allday_time.append(0)
+                    title.append(event['summary'])
+                    if 'location' in event:
+                        loca = event['location']
+                        location.append(loca)
+                    else:
+                        location.append(" ")
+    
+
+        len_event = len(year)
+
+        for row in range(0,len(recurrence)):
+            if recurrence[row] != 0:
+                rec = str(recurrence[row])
+                x = list(str(recurrence[row]))
+                if x[28] == "'" :
+                    recurrence2.append(int(rec[27:-2]))
+                else:           
+                    recurrence2.append(int(rec[27:-2]))
             else:
-                dateTime = event['start']['date']
-                dateTime2 = event['end']['date']
-                year.append(dateTime[:4])
-                month.append(dateTime[5:-3])
-                date.append(dateTime[8:])      
-                start_time_hour.append(00)
-                start_time_minute.append(00)
-                end_time_hour.append(00)
-                end_time_minute.append(00)
-                allday_time.append(1)
+                recurrence2.append(int(1))
 
 
         templates = {
@@ -138,6 +207,9 @@ class MainHandler(webapp2.RequestHandler):
             'end_time_hour' : end_time_hour,    
             'end_time_minute' : end_time_minute,    
             'allday_time' : allday_time,  
+            'recurrence2' : recurrence2,    
+            'len_event' : len_event,
+            'location' : location,
     		'followcourse' : cursor.fetchall(),
     		'student_id' : student_id,
     		'regis' : cursor4.fetchall(),
@@ -970,7 +1042,7 @@ class InsertCelendar(webapp2.RequestHandler):
 
         course_code = self.request.get('course_code');
         section = self.request.get('section');
-        # section = int(section)
+        section_id= int(section)
         student_id = self.request.get('student_id');
 
         today = datetime.datetime.now()
@@ -994,6 +1066,21 @@ class InsertCelendar(webapp2.RequestHandler):
         conn.commit()
         result = cursor.fetchall()
 
+
+        cursor2 = conn.cursor()
+        sql ="select room from\
+                section sec JOIN section_time sct\
+                ON sec.section_id=sct.section_id\
+                JOIN course cou\
+                ON cou.course_id=sec.regiscourse_id\
+                WHERE course_code='%s' AND section_number=(select section_number from section_time where section_id='%s')"%(course_code,section_id)
+
+        cursor2.execute(sql)
+        conn.commit() 
+        room = ""
+        for x in cursor2.fetchall():
+            room.append(x)
+
         day = []
         full_start_time =[]
         full_end_time = []
@@ -1003,10 +1090,8 @@ class InsertCelendar(webapp2.RequestHandler):
         insert_day2 = []
         month_num2=[]
 
-        # self.response.write(sql)
+        # self.response.write(room)
         # self.response.write("</br>")
-        # self.response.write(course_code)
-        # self.response.write(section)
 
         for x in range(0,len(result)):
             day.append(result[x][0])
@@ -1044,12 +1129,15 @@ class InsertCelendar(webapp2.RequestHandler):
         
         for x in range(0,len(insert_day)):
             insert_day2.append('2013-'+str(month_num2[x])+'-'+str(insert_day[x]))   
+
+
+        # self.response.write(room)
         
         http = decorator.http()
         for num in range(0,len(day)):
             event = {
                 'summary' : "%s"%(course_code),
-                'Location' : 'Thai-Nichi Institute of Technology',
+                'location' : room[num],
                 'start' : {
                     'dateTime' : "%sT%s.000+07:00"%(insert_day2[num],full_start_time[num]),
                     'timeZone' : 'Asia/Bangkok'
@@ -1084,41 +1172,12 @@ class DeleteCalendar(webapp2.RequestHandler):
         ID_events = []
         name_events = []
 
-        conn = rdbms.connect(instance=_INSTANCE_NAME, database='Prinya_Project')
-        cursor = conn.cursor()
-        sql ="select room from\
-                section sec JOIN section_time sct\
-                ON sec.section_id=sct.section_id\
-                JOIN course cou\
-                ON cou.course_id=sec.regiscourse_id\
-                WHERE course_code='%s' AND section_number=(select section_number from section_time where section_id='%s')"%(course_code,section_id)
-
-        cursor.execute(sql)
-        conn.commit()
-
-        # room = ""
-        # for x in cursor.fetchall():
-        #     room = x[0]
-
-        # fullname =course_code+' '+room
-
         for event in events['items']:
             if 'summary' in event:
                 id_event = event['id']
                 name_event = event['summary']
                 ID_events.append(id_event)
                 name_events.append(name_event)
- 
-
-        # self.response.write(course_code)
-        # self.response.write("</br>")        
-        # self.response.write(room)
-        # self.response.write("</br>")        
-        # self.response.write(fullname)
-        # for y in range(0,len(ID_events)):  
-        #     self.response.write(ID_events[y])
-        #     self.response.write(name_events[y])
-
 
         for y in range(0,len(ID_events)):   
             if course_code == name_events[y]:
@@ -1126,6 +1185,7 @@ class DeleteCalendar(webapp2.RequestHandler):
                 service.events().delete(calendarId='primary', eventId=ID_events[y]).execute(http=http)
 
         self.redirect('/SendMail?student_id='+str(student_id)+'&regiscourse_id='+str(regiscourse_id))
+
 
         
 app = webapp2.WSGIApplication([

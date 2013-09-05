@@ -55,6 +55,7 @@ body {
   $(document).ready(function() {
 
 /*-------------------------------------------- Start Get Array --------------------------------------------------------- */
+            var title = [""];
             var year=[""];
             var month=[""];
             var date=[""];
@@ -63,6 +64,9 @@ body {
             var end_time_hour = [""];
             var end_time_minute = [""];
             var allday_time = [""];
+            var rec = [""];
+            var lenght_event = {{ len_event }};
+            var location = [""];
 
               {% for row in year %}
                 year.push("{{row}}");
@@ -96,6 +100,18 @@ body {
                  allday_time.push("{{row8}}");  
               {% endfor %}
 
+              {% for row9 in recurrence2 %}
+                 rec.push("{{row9}}");  
+              {% endfor %}
+
+              {% for row10 in title %}
+                 title.push("{{row10}}");  
+              {% endfor %}
+
+              {% for row11 in location %}
+                 location.push("{{row11}}");  
+              {% endfor %}
+
 /*-------------------------------------------- End Get Array --------------------------------------------------------- */
 
 /*-------------------------------------------- Start Calendar --------------------------------------------------------- */
@@ -109,24 +125,50 @@ body {
                 },
         defaultView: 'agendaWeek',
         events: [
-        {% for row in events %}   
-        {% if(allday_time[loop.index-1]!=1) %}
-          {
-          title: '{{ row['summary'] }}',
-          start: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}], start_time_hour[{{loop.index}}], start_time_minute[{{loop.index}}]),
-          end: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}], end_time_hour[{{loop.index}}], end_time_minute[{{loop.index}}]),
-          allDay: false
-        },          
-        {% else %}
-          {
-          title: '{{ row['summary'] }}',
-          start: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}]),
-          end: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}]),
-          allDay: true
-        },
-        {% endif %}
+        {% for row in events %}  
+          {% if(recurrence2[loop.index-1]==1) %} 
+            {% if(allday_time[loop.index-1]!=1) %}
+              {
+              title: '{{ row['summary'] }}  {{ location[loop.index-1] }}',
+              start: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}], start_time_hour[{{loop.index}}], start_time_minute[{{loop.index}}]),
+              end: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}], end_time_hour[{{loop.index}}], end_time_minute[{{loop.index}}]),
+              allDay: false
+              },    
+            {% else %}
+              {
+              title: '{{ row['summary'] }}  {{ location[loop.index-1] }}',
+              start: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}]),
+              end: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}]),
+              allDay: true
+              },
+            {% endif %}
+          {% else %}
+            {% if(allday_time[loop.index-1]!=1) %}
+
+
+                {
+                title: '{{ row['summary'] }}  {{ location[loop.index-1] }}',
+                start: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}], start_time_hour[{{loop.index}}], start_time_minute[{{loop.index}}]),
+                end: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}], end_time_hour[{{loop.index}}], end_time_minute[{{loop.index}}]),
+                allDay: false
+                },
+
+
+            {% else %}
+              {% for x in range(0,recurrence2[loop.index-1]) %}
+                {
+                title: '{{ row['summary'] }}  {{ location[loop.index-1] }}',
+                start: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}]),
+                end: new Date(year[{{loop.index}}], month[{{loop.index}}]-1, date[{{loop.index}}]),
+                allDay: true
+                },
+              {% endfor %}
+            {% endif %}
+          {% endif %}
         {% endfor %}
+
         ]
+
       });
 
   });
