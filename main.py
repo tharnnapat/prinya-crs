@@ -1066,6 +1066,9 @@ class InsertCelendar(webapp2.RequestHandler):
         open_semester_year = '2013-09-02' #Insert Date on Monday
         weekly_study = 4
 
+        cut_year = int(open_semester_year[:4])
+        # self.response.write(cut_year)
+
         course_code = self.request.get('course_code');
         section = self.request.get('section');
         section_id= int(section)
@@ -1154,10 +1157,10 @@ class InsertCelendar(webapp2.RequestHandler):
                             month_num2.append(month_num+1)                                                  
         
         for x in range(0,len(insert_day)):
-            insert_day2.append('2013-'+str(month_num2[x])+'-'+str(insert_day[x]))   
+            insert_day2.append(str(cut_year)+'-'+str(month_num2[x])+'-'+str(insert_day[x]))   
 
 
-        # self.response.write(room)
+        # self.response.write(insert_day2)
         
         http = decorator.http()
         for num in range(0,len(day)):
