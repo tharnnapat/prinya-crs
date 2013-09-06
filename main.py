@@ -714,15 +714,30 @@ class EnrollHandler(webapp2.RequestHandler):
             cursor4.execute(sql4);
             conn4.commit()
 
+
             conn2.close()
             conn3.close()
             conn4.close()
-    		
-    		
 
+        conn5 = rdbms.connect(instance=_INSTANCE_NAME, database='Prinya_Project')
+        cursor5 = conn5.cursor()
+        sql5="SELECT semester,course_code\
+                from course cou join regiscourse rc \
+                ON cou.course_id=rc.course_id \
+                where cou.course_code = '%s'"%(course_code)
+        cursor5.execute(sql5);
+        conn5.commit() 
+
+        semester = ""
+
+        for row3 in cursor5.fetchall():
+            semester=row3[0]  
+
+        conn5.close()   		
+    		
     	conn.close()
 
-        self.redirect('/InsertCelendar?student_id='+str(student_id)+'&course_code='+str(course_code)+'&section='+str(section_number))
+        self.redirect('/InsertCelendar?student_id='+str(student_id)+'&course_code='+str(course_code)+'&section='+str(section_number)+'&semester='+str(semester))
 
 class ErrorHandler(webapp2.RequestHandler):
     def get(self):
@@ -1063,11 +1078,6 @@ class InsertCelendar(webapp2.RequestHandler):
     @decorator.oauth_required
     def get(self):
 
-        open_semester_year = '2013-09-02' #Insert Date on Monday
-        weekly_study = 4
-
-        cut_year = int(open_semester_year[:4])
-        # self.response.write(cut_year)
 
         course_code = self.request.get('course_code');
         section = self.request.get('section');
@@ -1078,11 +1088,44 @@ class InsertCelendar(webapp2.RequestHandler):
         weekday = today.weekday()+2
         if weekday == 6 :
             weekday = 1 
-        month_num=int(open_semester_year[5:-3])
-        day_num =int(open_semester_year[8:])
 
+        semester = self.request.get('semester');
+
+        start_semester = ""
+        end_semester = ""    
 
         conn = rdbms.connect(instance=_INSTANCE_NAME, database='Prinya_Project')
+
+        cursor3 = conn.cursor()
+        sql ="select * from semester where semester_id = '%s'"%(semester)
+        cursor3.execute(sql)
+        conn.commit() 
+        for x in cursor3.fetchall():
+            start_semester = str(x[1])
+            end_semester = str(x[2])
+
+        open_semester_year = start_semester
+
+        num = 0
+
+        new_start_date = datetime.datetime.strptime(start_semester, "%Y-%m-%d").date()
+        new_end_date = datetime.datetime.strptime(end_semester, "%Y-%m-%d").date()
+
+
+        new_start_date2 = str(new_start_date)  
+        cut_year = int(new_start_date2[:4])
+        month_num=int(new_start_date2[5:-3])
+        day_num =int(new_start_date2[8:])
+
+        while (new_start_date <= new_end_date ) :
+            new_start_date = new_start_date + datetime.timedelta(days=+7)
+            num += 1
+            
+        weekly_study = num
+
+
+
+        
         cursor = conn.cursor()
         sql ="select day,start_time,end_time,room from\
                 section sec JOIN section_time sct\
@@ -1110,6 +1153,8 @@ class InsertCelendar(webapp2.RequestHandler):
         for x in cursor2.fetchall():
             room.append(x)
 
+
+
         day = []
         full_start_time =[]
         full_end_time = []
@@ -1119,8 +1164,6 @@ class InsertCelendar(webapp2.RequestHandler):
         insert_day2 = []
         month_num2=[]
 
-        # self.response.write(room)
-        # self.response.write("</br>")
 
         for x in range(0,len(result)):
             day.append(result[x][0])
@@ -1160,7 +1203,7 @@ class InsertCelendar(webapp2.RequestHandler):
             insert_day2.append(str(cut_year)+'-'+str(month_num2[x])+'-'+str(insert_day[x]))   
 
 
-        # self.response.write(insert_day2)
+        self.response.write(insert_day2)
         
         http = decorator.http()
         for num in range(0,len(day)):
